@@ -39,6 +39,10 @@ int main() {
     hostname = strtok(url, "/");
     path = strchr(url_cp, '/');
 
+    if (path == NULL) {
+        path = "/";
+    }
+
     // hostname_to_ip(hostname, ip);
 
     printf("the valid URL is %s\n", hostname);

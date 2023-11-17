@@ -8,5 +8,6 @@ int main() {
     scanf("%s", hostname);
 
     printf("you enter %s\n", hostname);
+    // printf("%d\n",strlen("get "));
     return 0;
 }

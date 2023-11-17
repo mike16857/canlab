@@ -21,7 +21,7 @@ int main()
     char *hostname;
     char *path;
     char ip[100];
-    int hyperlink_count;
+    int hyperlink_count = 0;
 
     /* Enter URL */
     printf("Please enter the URL:\n");
@@ -31,6 +31,7 @@ int main()
     /* Get host IP address */
     hostname = strtok(url, "/");
     path = strchr(url_cp, '/');
+    if (path == NULL) path = "/"; // default path
     hostname_to_ip(hostname, ip);
 
     /* Create socket */
@@ -59,26 +60,29 @@ int main()
     printf("Connected to server\n");
 
     /* Send HTTP GET request message */
-    char *message1 = "GET /{path} HTTP/1.1\r\n";
-    char *message2 = "Host: {hostname}\r\n";
-    char *message3 = "Connection: close\r\n\r\n";
+    send(sockfd, "GET ", strlen("GET "), 0);
+    send(sockfd, path, strlen(path), 0);
+    send(sockfd, " HTTP/1.1\r\nHost: ", strlen(" HTTP/1.1\r\nHost: "), 0);
+    send(sockfd, hostname, strlen(hostname), 0);
+    send(sockfd, "\r\nConnection: close\r\n\r\n", strlen("\r\nConnection: close\r\n\r\n"), 0);
 
-    send(sockfd, message, strlen(message), 0);
-    send(sockfd, message, strlen(message), 0);
-    send(sockfd, message, strlen(message), 0);
     printf("Sending HTTP request\n");
+    /*/////////////////////////////////////////////////////////////////////////////////////////////////*/
 
     /* Reveive response */
     unsigned char buffer[BUFFER_SIZE] = {'\0'};
-    recv(sockfd, buffer, BUFFER_SIZE, 0);
+    recv(sockfd, buffer, BUFFER_SIZE, MSG_WAITALL);
     printf("%s\n", buffer);
     close(sockfd);
 
+    /* Count number of hyperlinks */
+    
+
     /* Print result */
-    printf("============================")
+    printf("============================\n");
     //print hyperlinks
-    printf("============================")
-    printf("We have found %d hyperlinks", hyperlink_count)
+    printf("============================\n");
+    printf("We have found %d hyperlinks\n", hyperlink_count);
     
     return 0;
 }
