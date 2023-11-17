@@ -4,19 +4,20 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#define BUFFER_SIZE 1024
-#define PORT 8080
+#define BUFFER_SIZE 102400
+#define PORT 80
 int main()
 {
     int sockfd;
     struct sockaddr_in server_addr;
     socklen_t addrlen = sizeof(server_addr);
 
-    char *message = "Hello from client";
+    // char *message = "Hello from client";
+    char *message = "GET /contact.php HTTP/1.1\r\nHost: www.cs.nthu.edu.tw\r\nConnection: close\r\n\r\n";
     unsigned char buffer[BUFFER_SIZE] = {'\0'};
 
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server_addr.sin_addr.s_addr = inet_addr("140.114.85.141");
     server_addr.sin_port = htons(PORT);
 
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
