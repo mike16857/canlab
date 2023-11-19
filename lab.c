@@ -12,6 +12,7 @@
 
 
 int hostname_to_ip(char *, char *);
+int printHyperlink(char *, int);
 
 
 int main()
@@ -21,7 +22,7 @@ int main()
     char *hostname;
     char *path;
     char ip[100];
-    int hyperlink_count = 0;
+    int cnt;
 
     /* Enter URL */
     printf("Please enter the URL:\n");
@@ -42,7 +43,8 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    printf("Socket created\n");
+    printf("========== Socket ==========\n");
+    // printf("Socket created\n");
 
     /* Connect socket to server */ 
     struct sockaddr_in server_addr;
@@ -67,22 +69,20 @@ int main()
     send(sockfd, "\r\nConnection: close\r\n\r\n", strlen("\r\nConnection: close\r\n\r\n"), 0);
 
     printf("Sending HTTP request\n");
-    /*/////////////////////////////////////////////////////////////////////////////////////////////////*/
-
+    // printf("============================\n");
+    
     /* Reveive response */
     unsigned char buffer[BUFFER_SIZE] = {'\0'};
     recv(sockfd, buffer, BUFFER_SIZE, MSG_WAITALL);
-    printf("%s\n", buffer);
+    // printf("%s\n", buffer);
     close(sockfd);
 
-    /* Count number of hyperlinks */
-    
-
     /* Print result */
+    printf("======== Hyperlinks ========\n");
+    printHyperlink(buffer, 1); //print hyperlinks
     printf("============================\n");
-    //print hyperlinks
-    printf("============================\n");
-    printf("We have found %d hyperlinks\n", hyperlink_count);
+    cnt = printHyperlink(buffer, 0);
+    printf("We have found %d hyperlinks\n", cnt);
     
     return 0;
 }
@@ -110,4 +110,38 @@ int hostname_to_ip(char *hostname, char *ip)
     }
 
     return 1;
+}
+
+
+/*Function: Print all Hyperlinks and return the number of Hyperlinks*/
+int printHyperlink(char *response, int shouldPrint)
+{
+    char *head;
+    char *pt;
+    int cnt;
+
+    cnt = 0;
+    head = response;
+    pt = strstr(response, "<a ");
+
+    while (pt != NULL) {
+        head = pt;
+
+        pt = strstr(head, "href=\"");
+        pt += strlen("href=\"");
+
+        while (*pt != '\"') {
+            if (shouldPrint == 1)
+                printf("%c", *pt);
+            pt++;
+        }
+        if (shouldPrint == 1)
+            printf("\n");
+        cnt++;
+
+        head = pt;
+        pt = strstr(head, "<a ");
+    }
+
+    return cnt;
 }
